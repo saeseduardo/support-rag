@@ -21,7 +21,7 @@ def init_db():
             CREATE TABLE IF NOT EXISTS documents (
                 id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
                 content     TEXT NOT NULL,
-                embedding   vector(1536),
+                embedding   vector(768),
                 metadata    JSONB DEFAULT '{}',
                 source_file TEXT,
                 chunk_index INT,

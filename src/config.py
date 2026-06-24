@@ -14,6 +14,9 @@ class Settings(BaseSettings):
     database_url: str = "postgresql://dev:dev@localhost:5432/supportrag"
     redis_url: str = "redis://localhost:6379"
 
+    chunk_size: int = 512
+    chunk_overlap: int = 50
+
     class Config:
         env_file = ".env"
 

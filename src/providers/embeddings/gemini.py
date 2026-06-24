@@ -5,8 +5,9 @@ from src.config import settings
 
 # Gemini embedding dimensions segun modelo
 GEMINI_EMBEDDING_DIMS = {
-    "models/text-embedding-004": 768,
+    "models/text-embedding-004":  768,
     "models/embedding-001":      768,
+    "models/gemini-embedding-001": 3072,
 }
 
 
@@ -31,6 +32,7 @@ class GeminiEmbeddingProvider(BaseEmbeddingProvider):
                         model=self._model,
                         content=text,
                         task_type="retrieval_document",
+                        output_dimensionality=settings.embedding_dimensions,
                     )
                     results.append(result["embedding"])
                     break
@@ -41,7 +43,7 @@ class GeminiEmbeddingProvider(BaseEmbeddingProvider):
         return results
 
     def dimensions(self) -> int:
-        return GEMINI_EMBEDDING_DIMS.get(self._model, 768)
+        return settings.embedding_dimensions
 
     def cost_per_million_tokens(self) -> float:
         return 0.0  # text-embedding-004 es GRATIS hasta 1500 req/min
