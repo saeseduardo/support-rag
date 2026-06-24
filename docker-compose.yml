@@ -1,4 +1,20 @@
 services:
+  app:
+    build: .
+    container_name: supportrag-app
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: postgresql://dev:dev@postgres:5432/supportrag
+      REDIS_URL: redis://redis:6379
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+
   postgres:
     image: pgvector/pgvector:pg16
     container_name: supportrag-db
@@ -7,7 +23,7 @@ services:
       POSTGRES_USER: dev
       POSTGRES_PASSWORD: dev
     ports:
-      - "5432:5432"
+      - "5433:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
