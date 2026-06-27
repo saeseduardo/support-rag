@@ -1,5 +1,4 @@
 import hashlib
-import json
 from sqlalchemy.orm import Session
 from sqlalchemy import text
 
@@ -51,7 +50,7 @@ def save_chunks(db: Session, chunks: list[dict]) -> int:
             {
                 "content": chunk["content"],
                 "embedding": str(chunk["embedding"]),
-                "metadata": json.dumps(chunk.get("metadata", {})),
+                "metadata": chunk.get("metadata", {}),
                 "source_file": chunk["source_file"],
                 "chunk_index": chunk["chunk_index"],
                 "checksum": chunk.get("checksum", ""),
