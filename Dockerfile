@@ -13,6 +13,7 @@ COPY --from=builder /root/.local /root/.local
 COPY src/ ./src/
 COPY scripts/ ./scripts/
 COPY docs/ ./docs/
+COPY tests/ ./tests/ 
 
 ENV PATH=/root/.local/bin:$PATH
 ENV PYTHONPATH=/app

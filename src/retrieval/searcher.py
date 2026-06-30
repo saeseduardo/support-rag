@@ -66,10 +66,10 @@ def search(
                 source_file,
                 chunk_index,
                 metadata,
-                1 - (embedding <=> :embedding::vector) AS score
+                1 - (embedding <=> CAST(:embedding AS vector)) AS score
             FROM documents
             {where_clause}
-            ORDER BY embedding <=> :embedding::vector
+            ORDER BY embedding <=> CAST(:embedding AS vector)
             LIMIT :limit
         """),
         params,

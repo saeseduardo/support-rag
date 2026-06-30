@@ -16,6 +16,8 @@ import httpx
 from datetime import datetime
 from pathlib import Path
 
+REQUEST_DELAY_S = 15  # evita el rate limit de Gemini free tier
+
 BASE_URL = "http://localhost:8000"
 
 # Las mismas preguntas del manual_test.py — importante usar las mismas
@@ -27,10 +29,6 @@ QUESTIONS = [
     "Donde veo el historial de facturacion?",
     "Como agrego un nuevo usuario al equipo?",
     "Que pasa si supero el limite de la API?",
-    "Como configuro las notificaciones por email?",
-    "Puedo integrar esto con Slack?",
-    "Como cancelo mi suscripcion?",
-    "Donde estan los logs de actividad?",
 ]
 
 STRATEGIES = ["fixed", "semantic", "recursive"]
@@ -62,6 +60,8 @@ def run_strategy(strategy: str) -> dict:
                 },
                 timeout=30.0,
             )
+            if r.status_code != 200:
+                raise ValueError(f"HTTP {r.status_code}: {r.text[:200]}")
             d = r.json()
 
             lat   = d.get("latency", {}).get("total_ms", 0)
@@ -87,15 +87,21 @@ def run_strategy(strategy: str) -> dict:
         except Exception as e:
             print(f"  [{i:02d}] ERROR: {e}")
 
+        time.sleep(REQUEST_DELAY_S)
+
     # Calcula p95 de latencia
     sorted_lat = sorted(latencies)
-    p95_idx    = int(len(sorted_lat) * 0.95)
-    p95_lat    = sorted_lat[min(p95_idx, len(sorted_lat)-1)]
+    if sorted_lat:
+        p95_idx = int(len(sorted_lat) * 0.95)
+        p95_lat = sorted_lat[min(p95_idx, len(sorted_lat) - 1)]
+        p50_lat = sorted_lat[len(sorted_lat) // 2]
+    else:
+        p95_lat = p50_lat = 0
 
     summary = {
         "strategy":         strategy,
         "questions_tested": len(QUESTIONS),
-        "latency_p50_ms":   sorted(latencies)[len(latencies)//2],
+        "latency_p50_ms":   p50_lat,
         "latency_p95_ms":   p95_lat,
         "avg_cost_usd":     round(sum(costs) / len(costs), 5) if costs else 0,
         "total_cost_usd":   round(sum(costs), 5),
