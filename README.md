@@ -78,7 +78,7 @@ Agregar un proveedor nuevo (Anthropic, Mistral) requiere crear un archivo en `pr
 
 ---
 
-## Estrategias de Chunking (Sprint 2)
+## Estrategias de Chunking
 
 El sistema soporta tres estrategias de chunking configurables via `CHUNK_STRATEGY` en `.env`. Todas producen chunks de ~512 caracteres con overlap de 50.
 
